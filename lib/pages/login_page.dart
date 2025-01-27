@@ -1,4 +1,5 @@
 import 'package:chatapp/constants.dart';
+import 'package:chatapp/cubits/chat_cubit/chat_cubit.dart';
 import 'package:chatapp/cubits/log_in_cubit/login_cubit.dart';
 import 'package:chatapp/helper/show_snack_bar.dart';
 import 'package:chatapp/pages/Sign_up.dart';
@@ -23,6 +24,7 @@ class LoginPage extends StatelessWidget {
         if (state is LoginLoading) {
           loginCubit.isLoading = true;
         } else if (state is LoginSuccess) {
+          BlocProvider.of<ChatCubit>(context).getMessages();
           Navigator.pushNamed(context, ChatPage.id);
           loginCubit.isLoading = false;
         } else if (state is LoginFailure) {
@@ -102,7 +104,9 @@ class LoginPage extends StatelessWidget {
                         loginCubit.loginUser(
                             email: loginCubit.email!,
                             password: loginCubit.password!);
-                      } else {}
+                      } else {
+                        showSnackBar(context, 'Please enter valid data');
+                      }
                     },
                     text: 'LOGIN',
                   ),

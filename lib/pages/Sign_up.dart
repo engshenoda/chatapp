@@ -101,7 +101,9 @@ class RegisterPage extends StatelessWidget {
                           signUpCubit.registerUser(
                               email: signUpCubit.email!,
                               password: signUpCubit.password!);
-                        } else {}
+                        } else {
+                          showSnackBar(context, 'Please enter valid data');
+                        }
                       },
                       text: 'REGISTER',
                     ),
