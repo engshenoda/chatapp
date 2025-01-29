@@ -17,8 +17,9 @@ class _SplachScreenState extends State<SplachScreen>
     super.initState();
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersive);
     Future.delayed(const Duration(seconds: 5), () {
+      // ignore: use_build_context_synchronously
       Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (_) =>   LoginPage()),
+        MaterialPageRoute(builder: (_) =>   const LoginPage()),
       );
     });
   }

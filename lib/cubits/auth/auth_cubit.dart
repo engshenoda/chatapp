@@ -1,22 +1,21 @@
 import 'package:bloc/bloc.dart';
-import 'package:chatapp/cubits/sign_up_cubit/sign_up_state.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+part 'auth_state.dart';
 
-class SignUpCubit extends Cubit<SignUpState> {
-  SignUpCubit() : super(SignUpInitial());
-  String? email;
-
-  String? password;
-
+class AuthCubit extends Cubit<AuthState> {
+  AuthCubit() : super(AuthInitial());
   bool isLoading = false;
 
   GlobalKey<FormState> formKey = GlobalKey();
+
+  String? email, password;
+
   Future<void> registerUser(
       {required String email, required String password}) async {
     emit(SignUpLoading());
     try {
-      UserCredential user = await FirebaseAuth.instance
+      await FirebaseAuth.instance
           .createUserWithEmailAndPassword(email: email, password: password);
       emit(SignUpSuccess());
     } on FirebaseAuthException catch (ex) {
@@ -27,6 +26,24 @@ class SignUpCubit extends Cubit<SignUpState> {
       }
     } catch (e) {
       emit(SignUpFailure(errMessage: 'there is an error please try again'));
+    }
+  }
+
+  Future<void> loginUser(
+      {required String email, required String password}) async {
+    emit(LoginLoading());
+    try {
+      await FirebaseAuth.instance
+          .signInWithEmailAndPassword(email: email, password: password);
+      emit(LoginSuccess());
+    } on FirebaseAuthException catch (ex) {
+      if (ex.code == 'user-not-found') {
+        emit(LoginFailure(errMessage: 'user-not-found'));
+      } else if (ex.code == 'wrong-password') {
+        emit(LoginFailure(errMessage: 'wrong-password'));
+      }
+    }  catch (_) {
+      emit(LoginFailure(errMessage: 'something is wrong'));
     }
   }
 }

@@ -6,15 +6,12 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 class ChatPage extends StatelessWidget {
   static String id = 'ChatPage';
-  final _controller = ScrollController();
 
-  TextEditingController controller = TextEditingController();
-
-  ChatPage({super.key});
+  const ChatPage({super.key});
   @override
   Widget build(BuildContext context) {
     var email = ModalRoute.of(context)!.settings.arguments;
-
+    final chatCubit = BlocProvider.of<ChatCubit>(context);
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
@@ -40,7 +37,7 @@ class ChatPage extends StatelessWidget {
                     BlocProvider.of<ChatCubit>(context).messagesList;
                 return ListView.builder(
                     reverse: true,
-                    controller: _controller,
+                    controller: chatCubit.scrollController,
                     itemCount: messagesList.length,
                     itemBuilder: (context, index) {
                       return messagesList[index].id == email
@@ -55,12 +52,12 @@ class ChatPage extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.all(16),
             child: TextField(
-              controller: controller,
+              controller: chatCubit.controller,
               onSubmitted: (data) {
                 BlocProvider.of<ChatCubit>(context)
                     .sendMessage(message: data, email: email.toString());
-                controller.clear();
-                _controller.animateTo(0,
+                chatCubit.controller.clear();
+                chatCubit.scrollController.animateTo(0,
                     duration: const Duration(milliseconds: 500),
                     curve: Curves.easeIn);
               },
