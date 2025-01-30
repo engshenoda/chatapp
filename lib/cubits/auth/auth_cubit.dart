@@ -5,18 +5,16 @@ part 'auth_state.dart';
 
 class AuthCubit extends Cubit<AuthState> {
   AuthCubit() : super(AuthInitial());
-  bool isLoading = false;
 
-  GlobalKey<FormState> formKey = GlobalKey();
+  final TextEditingController email = TextEditingController();
+  final TextEditingController password = TextEditingController();
 
-  String? email, password;
-
-  Future<void> registerUser(
-      {required String email, required String password}) async {
+  Future<void> registerUser() async {
     emit(SignUpLoading());
+
     try {
-      await FirebaseAuth.instance
-          .createUserWithEmailAndPassword(email: email, password: password);
+      await FirebaseAuth.instance.createUserWithEmailAndPassword(
+          email: email.text, password: password.text);
       emit(SignUpSuccess());
     } on FirebaseAuthException catch (ex) {
       if (ex.code == 'weak-password') {
@@ -29,21 +27,21 @@ class AuthCubit extends Cubit<AuthState> {
     }
   }
 
-  Future<void> loginUser(
-      {required String email, required String password}) async {
-    emit(LoginLoading());
-    try {
-      await FirebaseAuth.instance
-          .signInWithEmailAndPassword(email: email, password: password);
-      emit(LoginSuccess());
-    } on FirebaseAuthException catch (ex) {
-      if (ex.code == 'user-not-found') {
-        emit(LoginFailure(errMessage: 'user-not-found'));
-      } else if (ex.code == 'wrong-password') {
-        emit(LoginFailure(errMessage: 'wrong-password'));
-      }
-    }  catch (_) {
-      emit(LoginFailure(errMessage: 'something is wrong'));
-    }
-  }
+  // Future<void> loginUser() async {
+  //   emit(LoginLoading());
+
+  //   try {
+  //     await FirebaseAuth.instance.signInWithEmailAndPassword(
+  //         email: email.text, password: password.text);
+  //     emit(LoginSuccess());
+  //   } on FirebaseAuthException catch (ex) {
+  //     if (ex.code == 'user-not-found') {
+  //       emit(LoginFailure(errMessage: 'user-not-found'));
+  //     } else if (ex.code == 'wrong-password') {
+  //       emit(LoginFailure(errMessage: 'wrong-password'));
+  //     }
+  //   } catch (_) {
+  //     emit(LoginFailure(errMessage: 'something is wrong'));
+  //   }
+  // }
 }

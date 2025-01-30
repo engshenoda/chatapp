@@ -16,27 +16,26 @@ class RegisterPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final authCubit = BlocProvider.of<AuthCubit>(context);
-
+    GlobalKey<FormState> formKey = GlobalKey();
+    bool isLoading = false;
     return BlocConsumer<AuthCubit, AuthState>(
       listener: (context, state) {
         if (state is SignUpLoading) {
-          authCubit.isLoading = true;
         } else if (state is SignUpSuccess) {
           Navigator.pushNamed(context, ChatPage.id);
         } else if (state is SignUpFailure) {
           showSnackBar(context, state.errMessage);
-          authCubit.isLoading = false;
         }
       },
       builder: (context, state) {
         return ModalProgressHUD(
-          inAsyncCall: authCubit.isLoading,
+          inAsyncCall: isLoading,
           child: Scaffold(
             backgroundColor: kPrimaryColor,
             body: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 8),
               child: Form(
-                key: authCubit.formKey,
+                key: formKey,
                 child: ListView(
                   children: [
                     const SizedBox(
@@ -78,7 +77,7 @@ class RegisterPage extends StatelessWidget {
                     ),
                     CustomFormTextField(
                       onChanged: (data) {
-                        authCubit.email = data;
+                        authCubit.email.text = data;
                       },
                       hintText: 'Email',
                     ),
@@ -87,7 +86,7 @@ class RegisterPage extends StatelessWidget {
                     ),
                     CustomFormTextField(
                       onChanged: (data) {
-                        authCubit.password = data;
+                        authCubit.password.text = data;
                       },
                       hintText: 'Password',
                     ),
@@ -96,10 +95,8 @@ class RegisterPage extends StatelessWidget {
                     ),
                     CustomButon(
                       onTap: () async {
-                        if (authCubit.formKey.currentState!.validate()) {
-                          authCubit.registerUser(
-                              email: authCubit.email!,
-                              password: authCubit.password!);
+                        if (formKey.currentState!.validate()) {
+                          authCubit.registerUser();
                         } else {
                           showSnackBar(context, 'Please enter valid data');
                         }

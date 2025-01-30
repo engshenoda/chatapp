@@ -1,3 +1,4 @@
+import 'package:chatapp/blocs/auth_bloc/auth_bloc.dart';
 import 'package:chatapp/cubits/auth/auth_cubit.dart';
 import 'package:chatapp/cubits/chat_cubit/chat_cubit.dart';
 
@@ -26,6 +27,7 @@ class ScholarChat extends StatelessWidget {
       providers: [
         BlocProvider(create: (context) => AuthCubit()),
         BlocProvider(create: (context) => ChatCubit()),
+        BlocProvider(create: (context) => AuthBloc()),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,

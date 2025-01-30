@@ -1,5 +1,5 @@
+import 'package:chatapp/blocs/auth_bloc/auth_bloc.dart';
 import 'package:chatapp/constants.dart';
-import 'package:chatapp/cubits/auth/auth_cubit.dart';
 import 'package:chatapp/cubits/chat_cubit/chat_cubit.dart';
 import 'package:chatapp/helper/show_snack_bar.dart';
 import 'package:chatapp/pages/sign_up.dart';
@@ -18,31 +18,32 @@ class LoginPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final authCubit = BlocProvider.of<AuthCubit>(context);
-    return BlocConsumer<AuthCubit, AuthState>(
+    final authCubit = BlocProvider.of<AuthBloc>(context);
+    GlobalKey<FormState> formKey = GlobalKey();
+    bool isLoading = false;
+    String? email, password;
+    return BlocConsumer<AuthBloc, AuthState>(
       listener: (context, state) {
         if (state is LoginLoading) {
-          authCubit.isLoading = true;
+          isLoading = true;
         } else if (state is LoginSuccess) {
+          print("success");
           BlocProvider.of<ChatCubit>(context).getMessages();
-          Navigator.pushNamed(
-            context,
-            ChatPage.id,
-          );
-          authCubit.isLoading = false;
+          Navigator.pushNamed(context, ChatPage.id, arguments: email);
+          isLoading = false;
         } else if (state is LoginFailure) {
           showSnackBar(context, state.errMessage);
-          authCubit.isLoading = false;
+          isLoading = false;
         }
       },
       builder: (conext, state) => ModalProgressHUD(
-        inAsyncCall: authCubit.isLoading,
+        inAsyncCall: isLoading,
         child: Scaffold(
           backgroundColor: kPrimaryColor,
           body: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 8),
             child: Form(
-              key: authCubit.formKey,
+              key: formKey,
               child: ListView(
                 children: [
                   const SizedBox(
@@ -84,7 +85,7 @@ class LoginPage extends StatelessWidget {
                   ),
                   CustomFormTextField(
                     onChanged: (data) {
-                      authCubit.email = data;
+                      email = data;
                     },
                     hintText: 'Email',
                   ),
@@ -94,7 +95,7 @@ class LoginPage extends StatelessWidget {
                   CustomFormTextField(
                     obscureText: true,
                     onChanged: (data) {
-                      authCubit.password = data;
+                      password = data;
                     },
                     hintText: 'Password',
                   ),
@@ -103,10 +104,9 @@ class LoginPage extends StatelessWidget {
                   ),
                   CustomButon(
                     onTap: () async {
-                      if (authCubit.formKey.currentState!.validate()) {
-                        authCubit.loginUser(
-                            email: authCubit.email!,
-                            password: authCubit.password!);
+                      if (formKey.currentState!.validate()) {
+                        authCubit.add(
+                            LoginEvent(email: email!, passwprd: password!));
                       } else {
                         showSnackBar(context, 'Please enter valid data');
                       }
