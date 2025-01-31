@@ -1,3 +1,4 @@
+import 'package:chatapp/blocs/auth_bloc/auth_bloc.dart';
 import 'package:chatapp/constants.dart';
 import 'package:chatapp/cubits/auth/auth_cubit.dart';
 import 'package:chatapp/helper/show_snack_bar.dart';

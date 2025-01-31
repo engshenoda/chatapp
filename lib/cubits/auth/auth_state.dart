@@ -1,6 +1,7 @@
 part of 'auth_cubit.dart';
 
-@immutable
+
+@override
 sealed class AuthState {}
 
 final class AuthInitial extends AuthState {}

@@ -15,13 +15,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
               email: event.email, password: event.passwprd);
           emit(LoginSuccess());
         } on FirebaseAuthException catch (ex) {
-          if (ex.code == 'user-not-found') {
-            emit(LoginFailure(errMessage: 'user-not-found'));
-          } else if (ex.code == 'wrong-password') {
-            emit(LoginFailure(errMessage: 'wrong-password'));
-          }
-        } catch (_) {
-          emit(LoginFailure(errMessage: 'something is wrong'));
+          emit(LoginFailure(errMessage: ex.message.toString()));
         }
       }
     });

@@ -1,7 +1,7 @@
 import 'package:bloc/bloc.dart';
+import 'package:chatapp/blocs/auth_bloc/auth_bloc.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-part 'auth_state.dart';
 
 class AuthCubit extends Cubit<AuthState> {
   AuthCubit() : super(AuthInitial());
@@ -17,14 +17,9 @@ class AuthCubit extends Cubit<AuthState> {
           email: email.text, password: password.text);
       emit(SignUpSuccess());
     } on FirebaseAuthException catch (ex) {
-      if (ex.code == 'weak-password') {
-        emit(SignUpFailure(errMessage: 'weak-password'));
-      } else if (ex.code == 'email-already-in-use') {
-        emit(SignUpFailure(errMessage: 'email-already-in-use'));
-      }
-    } catch (e) {
-      emit(SignUpFailure(errMessage: 'there is an error please try again'));
-    }
+      emit(SignUpFailure(errMessage: ex.message.toString()));
+   }
+    } 
   }
 
   // Future<void> loginUser() async {
@@ -44,4 +39,3 @@ class AuthCubit extends Cubit<AuthState> {
   //     emit(LoginFailure(errMessage: 'something is wrong'));
   //   }
   // }
-}
